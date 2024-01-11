@@ -14,5 +14,13 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+//routes
+import userRouter from './routes/user.routes.js'
+import recruiterRouter from './routes/recruiter.routes.js'
+
+
+//routes declarations
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/recruiter", recruiterRouter);
 
 export { app }

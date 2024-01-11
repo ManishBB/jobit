@@ -1,4 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 const recruiterSchema = new Schema(
     {
@@ -17,7 +19,6 @@ const recruiterSchema = new Schema(
         },
         mobileNumber: {
             type: Number,
-            required: [true, "Mobile Number is required"]
         },
         companyName: {
             type: String,
@@ -28,7 +29,10 @@ const recruiterSchema = new Schema(
                 type: Schema.Types.ObjectId,
                 ref: "Job"
             }
-        ]    
+        ] ,
+        refreshToken: {
+            type: String
+        }   
     },
     {
         timestamps: true
@@ -36,9 +40,9 @@ const recruiterSchema = new Schema(
 )
 
 recruiterSchema.pre('save', async function (next) {
-    if(!this.isModified("password")) return next();
+    if(!this.isModified("password")) return;
 
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 
@@ -47,36 +51,29 @@ recruiterSchema.methods.isPasswordCorrect = async function (password) {
 }
 
 recruiterSchema.methods.generateAccessToken = function () {
-    const token = jwt.sign(
-        { 
+    return jwt.sign(
+        {
             _id: this._id,
             email: this.email,
-            name: this.name 
-        }, 
-        process.env.JWT_SECRET,
+            name: this.name,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
         {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
-    return token
 }
 
 recruiterSchema.methods.generateRefreshToken = function () {
-    const token = jwt.sign(
-        { 
+    return jwt.sign(
+        {
             _id: this._id,
-        }, 
-        process.env.JWT_SECRET,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
         {
             expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         }
     )
-    return token
-}
-
-recruiterSchema.methods.generateRefreshToken = function () {
-    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET)
-    return token
 }
 
 
