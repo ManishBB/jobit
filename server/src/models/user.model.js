@@ -21,12 +21,18 @@ const userSchema = new Schema(
             type: Number,
             required: [true, "Mobile Number is required"]
         },
+        profilePicture: {
+            type: String,
+        },
         appliedJobs: [
             {
                 type: Schema.Types.ObjectId,
                 ref: "Job"
             }
-        ]
+        ],
+        refreshToken: {
+            type: String
+        } 
     },
     {
         timestamps: true
@@ -36,7 +42,7 @@ const userSchema = new Schema(
 userSchema.pre('save', async function (next) {
     if(!this.isModified("password")) return next();
 
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 
@@ -45,36 +51,29 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 }
 
 userSchema.methods.generateAccessToken = function () {
-    const token = jwt.sign(
+    return jwt.sign(
         { 
             _id: this._id,
             email: this.email,
             name: this.name 
         }, 
-        process.env.JWT_SECRET,
+        process.env.ACCESS_TOKEN_SECRET,
         {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
-    return token
 }
 
 userSchema.methods.generateRefreshToken = function () {
-    const token = jwt.sign(
+    return jwt.sign(
         { 
             _id: this._id,
         }, 
-        process.env.JWT_SECRET,
+        process.env.REFRESH_TOKEN_SECRET,
         {
             expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         }
     )
-    return token
-}
-
-userSchema.methods.generateRefreshToken = function () {
-    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET)
-    return token
 }
 
 export const User = mongoose.model('User', userSchema)

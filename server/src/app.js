@@ -20,7 +20,7 @@ import recruiterRouter from './routes/recruiter.routes.js'
 
 
 //routes declarations
-app.use("/api/v1/users", userRouter);
+app.use("/api/v1/user", userRouter);
 app.use("/api/v1/recruiter", recruiterRouter);
 
 export { app }
