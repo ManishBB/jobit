@@ -24,6 +24,9 @@ const userSchema = new Schema(
         profilePicture: {
             type: String,
         },
+        resume: {
+            type: String,
+        },
         appliedJobs: [
             {
                 type: Schema.Types.ObjectId,

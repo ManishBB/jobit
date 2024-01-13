@@ -142,10 +142,104 @@ const logoutUser = asyncHandler ( async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out"))
 })
 
+const updateUserProfile = asyncHandler ( async (req, res) => {
+
+    const { name, mobileNumber, profilePicture, resume } = req.body
+    
+    if(!name || !mobileNumber || !profilePicture || !resume) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                name,
+                mobileNumber,
+                profilePicture,
+                resume
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, user, "Account details updated successfully")
+    )
+})
+
+const updateUserResume = asyncHandler ( async (req, res) => {
+
+    const resumeLocalPath = req.file?.path
+
+    if( !resumeLocalPath ) {
+        throw new ApiError(400, "Resume is missing")
+    }
+
+    const resume = await uploadOnCloudinary(resumeLocalPath)
+
+    if( !resume ) {
+        throw new ApiError(500, "Error while uploading resume")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                resume: resume.url
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, user, "Resume updated successfully")
+    )
+
+})
+
+const updateUserAvatar = asyncHandler ( async (req, res) => {
+
+    const avatarLocalPath = req.file?.path
+
+    if( !avatarLocalPath ) {
+        throw new ApiError(400, "Avatar is missing")
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath)
+
+    if( !avatar ) {
+        throw new ApiError(500, "Error while uploading avatar")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                profilePicture: avatar.url
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, user, "Avatar updated successfully")
+    )
+})
+
 
 export{
     registerUser,
     loginUser,
     logoutUser,
-    changeCurrentUserPassword
+    changeCurrentUserPassword,
+    updateUserProfile,
+    updateUserResume,
+    updateUserAvatar
 }

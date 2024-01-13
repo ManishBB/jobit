@@ -1,21 +1,19 @@
 import { Router } from 'express'
-import { changeCurrentUserPassword, loginUser, logoutUser, registerUser } from '../controllers/user.controller.js'
+import { changeCurrentUserPassword, loginUser, logoutUser, registerUser, updateUserAvatar, updateUserProfile, updateUserResume } from '../controllers/user.controller.js'
 import { verifyUserJWT } from '../middlewares/auth.middleware.js'
+import { upload } from '../middlewares/multer.middleware.js'
 
 
 const router = Router()
 
-// TODO: Register
 router.route('/register').post(registerUser)
-// TODO: Login
 router.route('/login').post(loginUser)
-// TODO: Logout
 router.route('/logout').post(verifyUserJWT, logoutUser)
-// TODO: Change Password
 router.route('/change-password').post(verifyUserJWT, changeCurrentUserPassword);
 
-// TODO: Update Profile
-// TODO: Change Profile Picture
+router.route('update-account').patch(verifyUserJWT, updateUserProfile)
+router.route('/update-resume').patch(verifyUserJWT, upload.single('resume'), updateUserResume)
+router.route("/avatar").patch(verifyUserJWT, upload.single("avatar"), updateUserAvatar)
 
 // TODO: Apply Job
 // TODO: View Applied Jobs
