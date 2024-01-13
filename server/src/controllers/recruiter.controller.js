@@ -92,7 +92,117 @@ const loginRecruiter = asyncHandler ( async(req, res) => {
     )
 })
 
+const changeCurrentRecruiterPassword = asyncHandler ( async (req, res) => {
+    const { oldPassword, newPassword } = req.body
+
+    const recruiter = await Recruiter.findById(req.recruiter?._id)
+
+    const isPasswordCorrect = await recruiter.isPasswordCorrect(oldPassword)
+
+    if(!isPasswordCorrect) throw new ApiError(400, "Invalid old password")
+
+    recruiter.password = newPassword
+
+    await recruiter.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, "Password updated successfully")
+    )
+})
+
+const logoutRecruiter = asyncHandler ( async (req, res) => {
+    await Recruiter.findByIdAndUpdate(
+        req.recruiter?._id,
+        {
+            $unset: {
+                refreshToken: 1
+            }
+        },
+        {
+            new: true,
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "Recruiter logged out"))
+})
+
+// TODO: This should take necessary arguments and update the document partially based on the given options 
+const updateRecruiterProfile = asyncHandler ( async (req, res) => {
+
+    const { name, mobileNumber, companyName, profilePicture } = req.body
+    
+    if(!name || !mobileNumber || !profilePicture || !companyName) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const recruiter = await Recruiter.findByIdAndUpdate(
+        req.recruiter?._id,
+        {
+            $set: {
+                name,
+                mobileNumber,
+                profilePicture,
+                companyName
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, recruiter, "Account details updated successfully")
+    )
+})
+
+const updateRecruiterAvatar = asyncHandler ( async (req, res) => {
+
+    const avatarLocalPath = req.file?.path
+
+    if( !avatarLocalPath ) {
+        throw new ApiError(400, "Avatar is missing")
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath)
+
+    if( !avatar ) {
+        throw new ApiError(500, "Error while uploading avatar")
+    }
+
+    const recruiter = await Recruiter.findByIdAndUpdate(
+        req.recruiter?._id,
+        {
+            $set: {
+                profilePicture: avatar.url
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, recruiter, "Avatar updated successfully")
+    )
+})
+
+
 export {
     registerRecruiter,
     loginRecruiter,
+    changeCurrentRecruiterPassword,
+    logoutRecruiter,
+    updateRecruiterProfile,
+    updateRecruiterAvatar
 }

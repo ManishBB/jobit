@@ -142,6 +142,7 @@ const logoutUser = asyncHandler ( async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out"))
 })
 
+// TODO: This should take necessary arguments and update the document partially based on the given options 
 const updateUserProfile = asyncHandler ( async (req, res) => {
 
     const { name, mobileNumber, profilePicture, resume } = req.body

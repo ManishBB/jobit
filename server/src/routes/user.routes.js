@@ -11,9 +11,9 @@ router.route('/login').post(loginUser)
 router.route('/logout').post(verifyUserJWT, logoutUser)
 router.route('/change-password').post(verifyUserJWT, changeCurrentUserPassword);
 
-router.route('update-account').patch(verifyUserJWT, updateUserProfile)
+router.route('/update-account').patch(verifyUserJWT, updateUserProfile)
 router.route('/update-resume').patch(verifyUserJWT, upload.single('resume'), updateUserResume)
-router.route("/avatar").patch(verifyUserJWT, upload.single("avatar"), updateUserAvatar)
+router.route("/update-avatar").patch(verifyUserJWT, upload.single("avatar"), updateUserAvatar)
 
 // TODO: Apply Job
 // TODO: View Applied Jobs

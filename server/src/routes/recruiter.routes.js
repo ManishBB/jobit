@@ -1,13 +1,17 @@
 import { Router } from 'express';
-import { loginRecruiter, registerRecruiter } from '../controllers/recruiter.controller.js';
+import { changeCurrentRecruiterPassword, loginRecruiter, logoutRecruiter, registerRecruiter, updateRecruiterAvatar, updateRecruiterProfile } from '../controllers/recruiter.controller.js';
+import { verifyRecruiterJWT } from '../middlewares/auth.middleware.js';
+import { upload } from '../middlewares/multer.middleware.js';
 
 const router = Router()
 
 router.route("/register").post(registerRecruiter)
 router.route("/login").post(loginRecruiter)
+router.route("/logout").post(verifyRecruiterJWT, logoutRecruiter)
+router.route("/change-password").post(verifyRecruiterJWT, changeCurrentRecruiterPassword)
 
-// TODO: Update Profile
-// TODO: Reset Password
+router.route("/update-account").patch(verifyRecruiterJWT, updateRecruiterProfile)
+router.route("/update-avatar").patch(verifyRecruiterJWT, upload.single("avatar"), updateRecruiterAvatar)
 
 // TODO: Create new Job
 // TODO: Edit Job

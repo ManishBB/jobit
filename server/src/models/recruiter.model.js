@@ -20,6 +20,9 @@ const recruiterSchema = new Schema(
         mobileNumber: {
             type: Number,
         },
+        profilePicture: {
+            type: String,
+        },
         companyName: {
             type: String,
             required: [true, "Company Name is required"]
