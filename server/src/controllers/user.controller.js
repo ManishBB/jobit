@@ -15,6 +15,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { Application } from "../models/application.model.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -234,6 +235,30 @@ const updateUserAvatar = asyncHandler ( async (req, res) => {
     )
 })
 
+const applyForJob = asyncHandler( async (req, res) => {
+    // const { jobId } = req.body
+
+    // if( !jobId || !req.user?._id) {
+    //     throw new ApiError(404, "Error while getting information")
+    // }
+
+    // const appliedJob = await Application.create({
+    //     applicant: req.user?._id,
+    //     job: jobId
+    // })
+
+    // if ( !appliedJob ) {
+    //     throw new ApiError(500, "Something went wrong")
+    // }
+
+    // return res
+    // .status(200)
+    // .json(200, appliedJob, "Applied job successfully")
+})
+
+const getAppliedJobs = asyncHandler ( async (req, res) => {
+    
+})
 
 export{
     registerUser,
@@ -242,5 +267,7 @@ export{
     changeCurrentUserPassword,
     updateUserProfile,
     updateUserResume,
-    updateUserAvatar
+    updateUserAvatar,
+    applyForJob,
+    getAppliedJobs,
 }

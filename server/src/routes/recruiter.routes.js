@@ -13,9 +13,7 @@ router.route("/change-password").post(verifyRecruiterJWT, changeCurrentRecruiter
 router.route("/update-account").patch(verifyRecruiterJWT, updateRecruiterProfile)
 router.route("/update-avatar").patch(verifyRecruiterJWT, upload.single("avatar"), updateRecruiterAvatar)
 
-// TODO: Create new Job
-// TODO: Edit Job
-// TODO: Delete Job
+
 
 // TODO: View Posted Jobs
 // TODO: View Specific posted jobs

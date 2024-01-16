@@ -17,10 +17,11 @@ app.use(cookieParser());
 //routes
 import userRouter from './routes/user.routes.js'
 import recruiterRouter from './routes/recruiter.routes.js'
-
+import jobRouter from './routes/job.routes.js'
 
 //routes declarations
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/recruiter", recruiterRouter);
+app.use("/api/v1/job", jobRouter);
 
 export { app }

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const jobSchema = new Schema(
     {
@@ -27,7 +27,6 @@ const jobSchema = new Schema(
         },
         companyLogo: {
             type: String,
-            required: true
         },
         aboutCompany: {
             type: String,
@@ -35,20 +34,11 @@ const jobSchema = new Schema(
         },
         additionalInfo: {
             type: String,
-            required: true
         },
-        postedBy: [
-            {
+        postedBy: {
             type: Schema.Types.ObjectId,
             ref: "Recruiter"
-            }
-        ],
-        appliedBy: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User"
-            }
-        ]
+        }
     },
     {
         timestamps: true
