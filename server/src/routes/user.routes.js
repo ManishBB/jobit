@@ -17,7 +17,7 @@ router.route("/update-avatar").patch(verifyUserJWT, upload.single("avatar"), upd
 
 router.route("/apply-job").post(verifyUserJWT, applyForJob)
 // TODO: View Applied Jobs
-router.route("/applied-jobs/:email").get(verifyUserJWT, getAppliedJobs)
+router.route("/applied-jobs").get(verifyUserJWT, getAppliedJobs)
 // TODO: Search Jobs based on skills
 
 

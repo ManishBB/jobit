@@ -16,6 +16,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Application } from "../models/application.model.js";
+import mongoose, { Types } from "mongoose";
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -257,7 +258,46 @@ const applyForJob = asyncHandler( async (req, res) => {
 })
 
 const getAppliedJobs = asyncHandler ( async (req, res) => {
-    
+
+    console.log(req.user._id);
+
+    const appliedJobs = await Application.aggregate([
+        {
+            $match: {
+                applicant : '65a10829738d739f8f96d8a0'
+            }
+        },
+        {
+            $addFields: {
+                jobId: {
+                    $toObjectId: "$job"
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: "jobs",
+                localField: "jobId",
+                foreignField: "_id",
+                as: "appliedJobs"
+            }
+        },
+        {
+            $project: {
+                appliedJobs:1
+            }
+        }
+    ])
+
+    if (!appliedJobs) {
+        throw new ApiError(404, "Applied Jobs not find!")
+    }
+
+    return res.status(200).json(new ApiResponse(
+        200,
+        appliedJobs,
+        "Applied jobs fetched successfully"
+    ))
 })
 
 export{
